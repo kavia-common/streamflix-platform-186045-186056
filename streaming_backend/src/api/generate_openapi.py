@@ -3,6 +3,11 @@ import os
 
 from src.api.main import app
 
+"""
+Generates OpenAPI schema file for the backend API.
+Run: python -m src.api.generate_openapi
+"""
+
 # Get the OpenAPI schema
 openapi_schema = app.openapi()
 
@@ -13,3 +18,4 @@ output_path = os.path.join(output_dir, "openapi.json")
 
 with open(output_path, "w") as f:
     json.dump(openapi_schema, f, indent=2)
+print(f"OpenAPI schema written to {output_path}")
