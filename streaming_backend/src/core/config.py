@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 # Load .env if present
 load_dotenv()
 
+# BASE_DIR points to streaming_backend/ directory
 BASE_DIR = Path(__file__).resolve().parents[2]
 
 def _read_db_path_from_connection_file() -> Optional[str]:
@@ -17,8 +18,11 @@ def _read_db_path_from_connection_file() -> Optional[str]:
       - file:/absolute/path/to/file.db
       - /absolute/path/to/file.db
     Returns a normalized absolute path string or None if not found.
+
+    Note:
+    We check typical locations including a sibling streaming_database/db_connection.txt
+    so this backend can auto-wire to the database container when present.
     """
-    # Search common locations for db_connection.txt
     candidates = [
         BASE_DIR / "db_connection.txt",
         BASE_DIR.parent / "db_connection.txt",
@@ -52,12 +56,13 @@ try:
 except ValueError:
     TOKEN_EXPIRE_MIN = 120
 
-# Cookies security flags
+# Cookies security flags for cross-site cookies when needed
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() in {"1", "true", "yes"}
 COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "lax").lower()
 COOKIE_DOMAIN = os.getenv("COOKIE_DOMAIN")  # Optional
 
 # Media directory for video files
+# Default to streaming_backend/media so seeds and local files align with container layout.
 MEDIA_DIR = os.getenv("MEDIA_DIR", str(BASE_DIR / "media"))
 
 # Database path handling with db_connection.txt fallback

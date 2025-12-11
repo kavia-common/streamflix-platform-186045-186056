@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,10 +20,14 @@ app = FastAPI(
     openapi_tags=openapi_tags,
 )
 
+# Determine allowed CORS origins. For local dev, default to React app on 3000.
+frontend_origin = os.getenv("REACT_APP_FRONTEND_URL") or os.getenv("FRONTEND_ORIGIN") or "http://localhost:3000"
+allowed_origins = [frontend_origin]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=allowed_origins,
+    allow_credentials=True,  # allow cookies for auth
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -56,7 +56,8 @@ def _ensure_schema(conn: sqlite3.Connection) -> None:
 
 
 def _seed_videos(conn: sqlite3.Connection) -> None:
-    # Idempotent simple seed: if no videos, insert a sample
+    # Idempotent simple seed: if no videos, insert sample rows.
+    # Filenames are relative to MEDIA_DIR (see src.core.config.MEDIA_DIR).
     cur = conn.execute("SELECT COUNT(*) as cnt FROM videos")
     cnt = cur.fetchone()["cnt"]
     if cnt == 0:
