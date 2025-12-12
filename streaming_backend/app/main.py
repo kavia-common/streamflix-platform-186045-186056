@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.core.config import get_settings
 from app.db.init_db import init_db
@@ -43,6 +46,11 @@ def _configure_cors() -> None:
 
 
 _configure_cors()
+
+# If running behind a reverse proxy (common in preview deployments), trust forwarded headers
+# so `request.url_for()` generates correct https:// URLs and hostnames.
+if os.getenv("TRUST_PROXY", "false").lower() in {"1", "true", "yes", "on"}:
+    app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 app.include_router(auth.router)
 app.include_router(videos.router)

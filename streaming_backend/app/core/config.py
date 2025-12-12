@@ -55,6 +55,10 @@ def get_settings() -> Settings:
     cookie_domain = os.getenv("COOKIE_DOMAIN") or None
     cookie_samesite = os.getenv("COOKIE_SAMESITE", "lax").lower()
 
+    # Browsers reject SameSite=None cookies unless Secure=true.
+    if cookie_samesite == "none" and not cookie_secure:
+        raise RuntimeError("Invalid cookie config: COOKIE_SAMESITE=none requires COOKIE_SECURE=true")
+
     # Prefer existing template env var names if present.
     cors_origins = _parse_csv(os.getenv("CORS_ORIGINS")) or _parse_csv(os.getenv("ALLOWED_ORIGINS"))
 
@@ -85,7 +89,7 @@ def resolve_sqlite_path() -> Path:
 
     # Deterministic default location inside the backend container root.
     # Keep it stable across environments unless overridden.
-    return Path(__file__).resolve().parents[2] / "data" / "streamflix.db"
+    return Path(__file__).resolve().parents[2] / "data" / "streamflix.sqlite3"
 
 
 # PUBLIC_INTERFACE
