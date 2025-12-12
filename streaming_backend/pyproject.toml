@@ -1,0 +1,47 @@
+[project]
+name = "streaming-backend"
+version = "0.1.0"
+description = "StreamFlix FastAPI backend (auth, videos, history, HTTP Range streaming) with SQLite."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.115.7",
+  "uvicorn==0.34.0",
+  "sqlalchemy==2.0.37",
+  "pydantic==2.10.6",
+  "python-jose[cryptography]==3.3.0",
+  "passlib[bcrypt]==1.7.4",
+  "email-validator>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ruff>=0.8.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["data"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+[tool.uvicorn]
+# Documentation-only: prefer running `uvicorn app.main:app --reload --host 0.0.0.0 --port 3001`
+
+[tool.pyright]
+# Keep minimal; CI may use another type checker, but this avoids strict failures by default.
+typeCheckingMode = "basic"
+
+[tool.ruff.lint.per-file-ignores]
+"app/db/init_db.py" = ["B008"]
